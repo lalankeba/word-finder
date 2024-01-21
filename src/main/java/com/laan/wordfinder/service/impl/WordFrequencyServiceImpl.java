@@ -4,17 +4,17 @@ import com.laan.wordfinder.dto.WordFrequencyResponse;
 import com.laan.wordfinder.exception.WordFrequencyException;
 import com.laan.wordfinder.mapper.WordFrequencyMapper;
 import com.laan.wordfinder.service.WordFrequencyService;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WordFrequencyServiceImpl implements WordFrequencyService {
 
-    @Value("${app.file.path}")
-    private String filePath;
+    @Value("${uploaded.file.path}")
+    private String uploadedFileLocation;
 
     private final WordFrequencyMapper wordFrequencyMapper;
 
@@ -36,6 +36,7 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
             Long totalWords = countTotalWords(map);
             return wordFrequencyMapper.mapDetailsToResponse(map, totalWords);
         } catch (IOException e) {
+            log.error("IOException occurred", e);
             throw new WordFrequencyException("Couldn't read the file. " + e.getMessage());
         }
     }
@@ -90,22 +91,17 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
     }
 
     private File saveFile(final MultipartFile multipartFile) throws IOException {
-        File currDir = new File(filePath);
-        String path = currDir.getAbsolutePath();
-        String fileLocation = path + File.separator + UUID.randomUUID();
-
-        File file = new File(fileLocation);
-        multipartFile.transferTo(file);
-
-        return file;
-    }
-
-    @PostConstruct
-    private void init() {
-        File fileDirectory = new File(filePath);
-        if (!fileDirectory.exists()) {
-            boolean folderCreated = fileDirectory.mkdirs();
-            log.info("Folder {} created: {}", fileDirectory.getName(), folderCreated);
+        Path rootDir = Paths.get(uploadedFileLocation);
+        if (!Files.exists(rootDir)) {
+            rootDir = Files.createDirectory( Paths.get(uploadedFileLocation) );
         }
+        Path destFile = rootDir.resolve(Paths.get(UUID.randomUUID().toString())).normalize().toAbsolutePath();
+
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            Files.copy(inputStream, destFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return destFile.toFile();
     }
+
 }
