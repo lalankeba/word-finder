@@ -47,13 +47,14 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
     }
 
     private Map<String, Integer> findFrequentWords(final MultipartFile multipartFile, final Integer k) throws IOException {
+        log.info("Finding frequent words in the file: {}", multipartFile.getOriginalFilename());
         Map<String, Integer> map = new HashMap<>();
 
         if (multipartFile.isEmpty()) {
             throw new WordFinderException("File must not be empty");
         }
 
-        File file = saveFile(multipartFile);
+        File file = saveFileInStorage(multipartFile);
 
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
             String line;
@@ -87,6 +88,8 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
         }
 
+        deleteFileFromStorage(file);
+
         return map;
     }
 
@@ -96,7 +99,8 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
         return wordCount.get();
     }
 
-    private File saveFile(final MultipartFile multipartFile) throws IOException {
+    private File saveFileInStorage(final MultipartFile multipartFile) throws IOException {
+        log.info("Saving file temporarily in the storage");
         Path rootDir = Paths.get(uploadedFileLocation);
         if (!Files.exists(rootDir)) {
             rootDir = Files.createDirectory( Paths.get(uploadedFileLocation) );
@@ -108,6 +112,14 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
         }
 
         return destFile.toFile();
+    }
+
+    private void deleteFileFromStorage(final File file) throws IOException {
+        log.info("Deleting file from the storage");
+        Path savedFilePath = Paths.get(uploadedFileLocation, file.getName());
+        if (Files.exists(savedFilePath)) {
+            Files.delete(savedFilePath);
+        }
     }
 
 }
