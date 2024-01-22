@@ -1,9 +1,10 @@
 package com.laan.wordfinder.service.impl;
 
 import com.laan.wordfinder.dto.WordFrequencyResponse;
-import com.laan.wordfinder.exception.WordFrequencyException;
+import com.laan.wordfinder.exception.WordFinderException;
 import com.laan.wordfinder.mapper.WordFrequencyMapper;
 import com.laan.wordfinder.service.WordFrequencyService;
+import com.laan.wordfinder.validator.FileValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,15 +30,19 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
 
     private final WordFrequencyMapper wordFrequencyMapper;
 
+    private final FileValidator fileValidator;
+
     @Override
     public WordFrequencyResponse processFile(final MultipartFile multipartFile, final Integer k) {
         try {
+            fileValidator.validateFile(multipartFile);
+
             Map<String, Integer> map = findFrequentWords(multipartFile, k);
             Long totalWords = countTotalWords(map);
             return wordFrequencyMapper.mapDetailsToResponse(map, totalWords);
         } catch (IOException e) {
             log.error("IOException occurred", e);
-            throw new WordFrequencyException("Couldn't read the file. " + e.getMessage());
+            throw new WordFinderException("Couldn't read the file. " + e.getMessage());
         }
     }
 
@@ -45,7 +50,7 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
         Map<String, Integer> map = new HashMap<>();
 
         if (multipartFile.isEmpty()) {
-            throw new WordFrequencyException("File must not be empty");
+            throw new WordFinderException("File must not be empty");
         }
 
         File file = saveFile(multipartFile);
@@ -61,6 +66,7 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
                 line = line.replaceAll(",", " ");
                 line = line.replaceAll("\\(", " ");
                 line = line.replaceAll("\\)", " ");
+                line = line.replaceAll("\\?", " ");
 
 
                 String[] words = line.split("\\s+");

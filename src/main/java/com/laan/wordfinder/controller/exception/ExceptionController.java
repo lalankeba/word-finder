@@ -1,6 +1,6 @@
 package com.laan.wordfinder.controller.exception;
 
-import com.laan.wordfinder.exception.WordFrequencyException;
+import com.laan.wordfinder.exception.WordFinderException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,8 +18,8 @@ public class ExceptionController {
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSize;
 
-    @ExceptionHandler(WordFrequencyException.class)
-    public ProblemDetail onWordFinderException(WordFrequencyException exception) {
+    @ExceptionHandler(WordFinderException.class)
+    public ProblemDetail onWordFinderException(WordFinderException exception) {
         log.error("WordFinderException occurred. {}", exception.getMessage());
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
