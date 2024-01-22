@@ -48,7 +48,7 @@ public class UploadControllerTest {
                                 queryParameters(parameterWithName("k").description("Required number of most frequent words")),
                                 responseFields(
                                         subsectionWithPath("wordFrequencies").description("The k most frequent words and their frequency"))
-                                        .and(fieldWithPath("totalWords").description("Total number of words in the k returned list"))
+                                        .and(fieldWithPath("fileName").description("Name of the uploaded file"))
                         ));
     }
 

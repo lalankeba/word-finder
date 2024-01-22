@@ -10,6 +10,7 @@ import java.util.Map;
 public interface WordFrequencyMapper {
 
     @Mapping(target = "wordFrequencies", source = "map")
-    @Mapping(target = "totalWords", source = "wordCount")
-    WordFrequencyResponse mapDetailsToResponse(Map<String, Integer> map, Long wordCount);
+    @Mapping(target = "fileName", source = "name")
+    WordFrequencyResponse mapDetailsToResponse(Map<String, Integer> map, String name);
+
 }

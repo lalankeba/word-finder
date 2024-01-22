@@ -10,6 +10,5 @@ import java.util.Map;
 public class WordFrequencyResponse {
 
     private Map<String, Integer> wordFrequencies;
-
-    private Long totalWords;
+    private String fileName;
 }

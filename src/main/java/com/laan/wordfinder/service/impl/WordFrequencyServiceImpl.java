@@ -4,6 +4,7 @@ import com.laan.wordfinder.dto.WordFrequencyResponse;
 import com.laan.wordfinder.exception.WordFinderException;
 import com.laan.wordfinder.mapper.WordFrequencyMapper;
 import com.laan.wordfinder.service.WordFrequencyService;
+import com.laan.wordfinder.task.WordFrequencyTask;
 import com.laan.wordfinder.validator.FileValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,14 +12,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -32,91 +36,56 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
 
     private final FileValidator fileValidator;
 
+    private final WordFrequencyTask wordFrequencyTask;
+
     @Override
     public WordFrequencyResponse processFile(final MultipartFile multipartFile, final Integer k) {
         try {
             fileValidator.validateFile(multipartFile);
+            String fileName = multipartFile.getOriginalFilename();
+            log.info("Processing the file: {} for k: {} words", fileName, k);
 
-            Map<String, Integer> map = findFrequentWords(multipartFile, k);
-            Long totalWords = countTotalWords(map);
-            return wordFrequencyMapper.mapDetailsToResponse(map, totalWords);
+            Path savedFilePath = saveFileInStorage(multipartFile);
+
+            String hash = getSha256Hash(savedFilePath);
+
+            Map<String, Integer> map = wordFrequencyTask.findFrequentWords(savedFilePath.toFile(), k, hash);
+
+            deleteFileFromStorage(savedFilePath);
+
+            return wordFrequencyMapper.mapDetailsToResponse(map, fileName);
         } catch (IOException e) {
             log.error("IOException occurred", e);
             throw new WordFinderException("Couldn't read the file. " + e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            log.error("NoSuchAlgorithmException occurred", e);
+            throw new WordFinderException("Algorithm cannot be found. " + e.getMessage());
         }
     }
 
-    private Map<String, Integer> findFrequentWords(final MultipartFile multipartFile, final Integer k) throws IOException {
-        log.info("Finding frequent words in the file: {}", multipartFile.getOriginalFilename());
-        Map<String, Integer> map = new HashMap<>();
-
-        if (multipartFile.isEmpty()) {
-            throw new WordFinderException("File must not be empty");
-        }
-
-        File file = saveFileInStorage(multipartFile);
-
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-
-                line = line.replaceAll("\\. ", " ");
-                line = line.replaceAll("; ", " ");
-                line = line.replaceAll(": ", " ");
-                line = line.replaceAll("\"", " ");
-                line = line.replaceAll(",", " ");
-                line = line.replaceAll("\\(", " ");
-                line = line.replaceAll("\\)", " ");
-                line = line.replaceAll("\\?", " ");
-
-
-                String[] words = line.split("\\s+");
-
-                for (String word : words) {
-                    if (!word.isEmpty()) {
-                        int count = Objects.nonNull(map.get(word)) ? map.get(word) : 0;
-                        map.put(word, count + 1);
-                    }
-                }
-
-            }
-
-            map = map.entrySet()
-                    .stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .limit(k)
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        }
-
-        deleteFileFromStorage(file);
-
-        return map;
+    private String getSha256Hash(final Path filePath) throws IOException, NoSuchAlgorithmException {
+        byte[] data = Files.readAllBytes(Paths.get(String.valueOf(filePath)));
+        byte[] hash = MessageDigest.getInstance("SHA-256").digest(data);
+        return new BigInteger(1, hash).toString(16);
     }
 
-    private Long countTotalWords(Map<String, Integer> map) {
-        AtomicLong wordCount = new AtomicLong(0);
-        map.values().forEach(wordCount::getAndAdd);
-        return wordCount.get();
-    }
-
-    private File saveFileInStorage(final MultipartFile multipartFile) throws IOException {
+    private Path saveFileInStorage(final MultipartFile multipartFile) throws IOException {
         log.info("Saving file temporarily in the storage");
         Path rootDir = Paths.get(uploadedFileLocation);
         if (!Files.exists(rootDir)) {
-            rootDir = Files.createDirectory( Paths.get(uploadedFileLocation) );
+            rootDir = Files.createDirectory(Paths.get(uploadedFileLocation));
         }
-        Path destFile = rootDir.resolve(Paths.get(UUID.randomUUID().toString())).normalize().toAbsolutePath();
+        Path destFilePath = rootDir.resolve(Paths.get(UUID.randomUUID().toString())).normalize().toAbsolutePath();
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            Files.copy(inputStream, destFile, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(inputStream, destFilePath, StandardCopyOption.REPLACE_EXISTING);
         }
 
-        return destFile.toFile();
+        return destFilePath;
     }
 
-    private void deleteFileFromStorage(final File file) throws IOException {
+    private void deleteFileFromStorage(final Path savedFilePath) throws IOException {
         log.info("Deleting file from the storage");
-        Path savedFilePath = Paths.get(uploadedFileLocation, file.getName());
         if (Files.exists(savedFilePath)) {
             Files.delete(savedFilePath);
         }
