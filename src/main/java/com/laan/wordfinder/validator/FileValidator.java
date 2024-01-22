@@ -19,7 +19,7 @@ public class FileValidator {
 
     public void validateFile(final MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty()) {
-            throw new WordFinderException("File is null or empty.");
+            throw new WordFinderException("File: " + multipartFile.getOriginalFilename() + " is empty.");
         } else {
             String mediaType = tika.detect(multipartFile.getInputStream());
             if (!MediaType.TEXT_PLAIN_VALUE.equals(mediaType)) {
