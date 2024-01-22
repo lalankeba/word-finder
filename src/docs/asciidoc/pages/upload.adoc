@@ -1,0 +1,63 @@
+== Upload File
+
+This section explains how to communicate with upload file API.
+
+=== Upload File
+
+Upload text file and returns the k number of most frequent words. API will only accept files with the media type *text/plain*.
+
+.curl request
+include::{snippets}/upload-file/curl-request.adoc[]
+
+.Query parameters
+include::{snippets}/upload-file/query-parameters.adoc[]
+
+.response
+include::{snippets}/upload-file/http-response.adoc[]
+
+.Response Description
+include::{snippets}/upload-file/response-fields.adoc[]
+
+
+=== Upload File Without K Value
+
+Upload text file without k number will give proper error message.
+
+.curl request
+include::{snippets}/upload-file-without-k/curl-request.adoc[]
+
+.response
+include::{snippets}/upload-file-without-k/http-response.adoc[]
+
+.Response Description
+include::{snippets}/upload-file-without-k/response-fields.adoc[]
+
+
+=== Upload File With Invalid K Value
+
+Upload text file with invalid k number will give proper error message.
+
+.curl request
+include::{snippets}/upload-file-with-invalid-k/curl-request.adoc[]
+
+.response
+include::{snippets}/upload-file-with-invalid-k/http-response.adoc[]
+
+.Response Description
+include::{snippets}/upload-file-with-invalid-k/response-fields.adoc[]
+
+
+=== Upload File With Different Media Type
+
+Upload a file with other than text/plain media type, will give proper error message. API will handle files carefully regardless of the extension.
+
+NOTE: User can upload any file by renaming its extension to *.txt*, but API will carefully examine the content of the file and respond with proper error message.
+
+.curl request
+include::{snippets}/upload-file-with-different-media-type/curl-request.adoc[]
+
+.response
+include::{snippets}/upload-file-with-different-media-type/http-response.adoc[]
+
+.Response Description
+include::{snippets}/upload-file-with-different-media-type/response-fields.adoc[]
