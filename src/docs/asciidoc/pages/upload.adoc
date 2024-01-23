@@ -61,3 +61,16 @@ include::{snippets}/upload-file-with-different-media-type/http-response.adoc[]
 
 .Response Description
 include::{snippets}/upload-file-with-different-media-type/response-fields.adoc[]
+
+
+=== Unauthorized Access
+
+If an unauthorized user tries to upload a file, then API will return proper error message.
+
+CAUTION: Unauthorized user can be a registered user in the system, but may not have the necessary permissions to access the endpoint.
+
+.curl request
+include::{snippets}/unauthorized-access/curl-request.adoc[]
+
+.response
+include::{snippets}/unauthorized-access/http-response.adoc[]
