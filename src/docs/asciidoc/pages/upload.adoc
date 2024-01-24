@@ -1,8 +1,14 @@
-== Upload File
+== Finding Word Frequency
 
 This section explains how to communicate with upload file API.
 
-=== Upload File
+[sidebar]
+.Sample file: file.txt used for the testing
+--
+include::{testresourcesdir}/sample-files/file.txt[]
+--
+
+=== Upload file
 
 Upload text file and returns the k number of most frequent words. API will only accept files with the media type *text/plain*.
 
@@ -19,7 +25,7 @@ include::{snippets}/upload-file/http-response.adoc[]
 include::{snippets}/upload-file/response-fields.adoc[]
 
 
-=== Upload File Without K Value
+=== Upload file without k value
 
 Upload text file without k number will give proper error message.
 
@@ -33,7 +39,21 @@ include::{snippets}/upload-file-without-k/http-response.adoc[]
 include::{snippets}/upload-file-without-k/response-fields.adoc[]
 
 
-=== Upload File With Invalid K Value
+=== Upload file with K value less than 1
+
+Upload text file with k value less than 1 will give proper error message.
+
+.curl request
+include::{snippets}/upload-file-with-minus-k/curl-request.adoc[]
+
+.response
+include::{snippets}/upload-file-with-minus-k/http-response.adoc[]
+
+.Response Description
+include::{snippets}/upload-file-with-minus-k/response-fields.adoc[]
+
+
+=== Upload file with invalid k value
 
 Upload text file with invalid k number will give proper error message.
 
@@ -47,7 +67,7 @@ include::{snippets}/upload-file-with-invalid-k/http-response.adoc[]
 include::{snippets}/upload-file-with-invalid-k/response-fields.adoc[]
 
 
-=== Upload File With Different Media Type
+=== Upload file with different media type
 
 Upload a file with other than text/plain media type, will give proper error message. API will handle files carefully regardless of the extension.
 
@@ -63,7 +83,7 @@ include::{snippets}/upload-file-with-different-media-type/http-response.adoc[]
 include::{snippets}/upload-file-with-different-media-type/response-fields.adoc[]
 
 
-=== Unauthorized Access
+=== Unauthorized access
 
 If an unauthorized user tries to upload a file, then API will return proper error message.
 
