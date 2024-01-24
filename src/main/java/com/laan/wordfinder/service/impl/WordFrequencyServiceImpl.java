@@ -41,7 +41,7 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
     @Override
     public WordFrequencyResponse processFile(final MultipartFile multipartFile, final Integer k) {
         try {
-            fileValidator.validateFile(multipartFile);
+            fileValidator.validateFile(multipartFile, k);
             String fileName = multipartFile.getOriginalFilename();
             log.info("Processing the file: {} for k: {} words", fileName, k);
 

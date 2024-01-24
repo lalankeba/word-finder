@@ -17,8 +17,10 @@ public class FileValidator {
 
     private final Tika tika;
 
-    public void validateFile(final MultipartFile multipartFile) throws IOException {
-        if (multipartFile.isEmpty()) {
+    public void validateFile(final MultipartFile multipartFile, Integer k) throws IOException {
+        if (k < 1) {
+            throw new WordFinderException("k: " + k + " must be greater than 1.");
+        } else if (multipartFile.isEmpty()) {
             throw new WordFinderException("File: " + multipartFile.getOriginalFilename() + " is empty.");
         } else {
             String mediaType = tika.detect(multipartFile.getInputStream());
