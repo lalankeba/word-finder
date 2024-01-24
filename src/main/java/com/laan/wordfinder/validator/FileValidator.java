@@ -19,7 +19,7 @@ public class FileValidator {
 
     public void validateFile(final MultipartFile multipartFile, Integer k) throws IOException {
         if (k < 1) {
-            throw new WordFinderException("k: " + k + " must be greater than 1.");
+            throw new WordFinderException("Value k: " + k + " must be greater than 1.");
         } else if (multipartFile.isEmpty()) {
             throw new WordFinderException("File: " + multipartFile.getOriginalFilename() + " is empty.");
         } else {
