@@ -32,6 +32,7 @@ public class WordFrequencyTask {
                 line = line.replaceAll("\\(", " ");
                 line = line.replaceAll("\\)", " ");
                 line = line.replaceAll("\\?", " ");
+                line = line.replaceAll("\\.$", " ");
 
                 String[] words = line.split("\\s+");
 
