@@ -28,7 +28,7 @@ public class WordFrequencyTask {
                 line = line.replaceAll("; ", " ");
                 line = line.replaceAll(": ", " ");
                 line = line.replaceAll("\"", " ");
-                line = line.replaceAll(",", " ");
+                line = line.replaceAll(", ", " ");
                 line = line.replaceAll("\\(", " ");
                 line = line.replaceAll("\\)", " ");
                 line = line.replaceAll("\\?", " ");
