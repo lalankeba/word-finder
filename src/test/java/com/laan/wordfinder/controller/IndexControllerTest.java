@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
@@ -32,5 +33,12 @@ class IndexControllerTest {
                         document("{method-name}",
                                 preprocessResponse(prettyPrint())
                         ));
+    }
+
+    @Test
+    void testUnsupportedMethod() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.put(PathUtil.WELCOME))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").exists());
     }
 }
