@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-public class UploadControllerTest {
+class UploadControllerTest {
 
     @Value("${app.admin.user.name}")
     private String adminUsername;
@@ -51,7 +51,7 @@ public class UploadControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void uploadFile() throws Exception {
+    void uploadFile() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("file.txt");
 
         this.mockMvc.perform(
@@ -73,7 +73,7 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void uploadFileWithoutK() throws Exception {
+    void uploadFileWithoutK() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("file.txt");
 
         this.mockMvc.perform(
@@ -97,7 +97,7 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void uploadFileWithMinusK() throws Exception {
+    void uploadFileWithMinusK() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("file.txt");
 
         this.mockMvc.perform(
@@ -121,7 +121,7 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void uploadFileWithInvalidK() throws Exception {
+    void uploadFileWithInvalidK() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("file.txt");
 
         this.mockMvc.perform(
@@ -145,7 +145,7 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void uploadFileWithDifferentMediaType() throws Exception {
+    void uploadFileWithDifferentMediaType() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("pdf-file.pdf");
 
         this.mockMvc.perform(
@@ -170,7 +170,7 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void unauthorizedAccess() throws Exception {
+    void unauthorizedAccess() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("file.txt");
 
         this.mockMvc.perform(
@@ -188,7 +188,7 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void uploadFileWithCorrectKWords() throws Exception {
+    void uploadFileWithCorrectKWords() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("file.txt");
         int k = 5;
 
@@ -203,7 +203,7 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void uploadFileWithCorrectResult() throws Exception {
+    void uploadFileWithCorrectResult() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("tiny-file.txt");
         int k = 8;
 
@@ -226,7 +226,7 @@ public class UploadControllerTest {
     }
 
     @Test
-    public void uploadFileWithLessKWords() throws Exception {
+    void uploadFileWithLessKWords() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("tiny-file.txt");
         int k = 20;
 

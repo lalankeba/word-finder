@@ -18,13 +18,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-public class IndexControllerTest {
+class IndexControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void init() throws Exception {
+    void init() throws Exception {
         this.mockMvc.perform(RestDocumentationRequestBuilders.get(PathUtil.WELCOME))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").exists())
