@@ -12,10 +12,15 @@ v1.0, {docdate}
 :testresourcesdir: ../../../test/resources
 
 == Introduction
-This project has the back end logic to find most frequent words from test files uploaded for the API.
-The project includes following functions.
+This project has the back end logic to find most frequent words from text files uploaded for the API.
+The project includes following features.
 
-. Upload file - upload a text file and required k number of words
+. Upload file: Upload a text file and required *k* number of words
+. Large files: Application is capable of handling large files.
+. Testing: Functions were tested appropriately and maintained 80%+ code coverage.
+. Caching: Caffeine was used to deliver efficient results avoiding re-calculations.
+. Data structures used: Trie Data structure, Priority Queues
+. Security: Basic authentication and authorization have been incorporated.
 
 include::pages/init.adoc[]
 
