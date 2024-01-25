@@ -22,6 +22,7 @@
 
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
 		<asciidoctorj-pdf.version>2.3.7</asciidoctorj-pdf.version>
+		<jacoco-maven-plugin-version>0.8.11</jacoco-maven-plugin-version>
 	</properties>
 
 	<dependencies>
@@ -170,6 +171,25 @@
 						<version>${asciidoctorj-pdf.version}</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin-version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
