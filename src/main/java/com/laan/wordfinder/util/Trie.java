@@ -54,7 +54,7 @@ public class Trie {
     private static class Node {
 
         private final Map<Character, Node> children;
-        private Boolean isWord;
+        private boolean isWord;
         private Integer frequency;
 
         public Node() {
