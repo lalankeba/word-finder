@@ -38,7 +38,7 @@ class IndexControllerTest {
     @Test
     void testUnsupportedMethod() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.put(PathUtil.WELCOME))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.detail").exists());
     }
 }

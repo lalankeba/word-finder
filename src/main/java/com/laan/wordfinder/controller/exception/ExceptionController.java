@@ -29,7 +29,7 @@ public class ExceptionController {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ProblemDetail onHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
         log.error("HttpRequestMethodNotSupportedException occurred. {}", exception.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return ProblemDetail.forStatusAndDetail(HttpStatus.METHOD_NOT_ALLOWED, exception.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -47,7 +47,7 @@ public class ExceptionController {
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ProblemDetail onMaxUploadSizeExceededException(MaxUploadSizeExceededException exception) {
         log.error("MaxUploadSizeExceededException occurred. {}", exception.getMessage());
-        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, exception.getMessage() + ". Max file size: " + maxFileSize);
+        return ProblemDetail.forStatusAndDetail(HttpStatus.PAYLOAD_TOO_LARGE, exception.getMessage() + ". Max file size: " + maxFileSize);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
