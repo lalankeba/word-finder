@@ -1,7 +1,7 @@
 package com.laan.wordfinder.config;
 
-import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
 import org.springframework.cache.CacheManager;
@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 @Slf4j
+@NoArgsConstructor
 public class BeanConfig {
 
     @Bean
@@ -30,10 +31,10 @@ public class BeanConfig {
     }
 
     @Bean
-    public CacheManager cacheManager(Caffeine<Object, Object> caffeine) {
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
-        caffeineCacheManager.setCaffeine(caffeine);
-        return caffeineCacheManager;
+    public CacheManager cacheManager(final Caffeine<Object, Object> caffeine) {
+        final CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        cacheManager.setCaffeine(caffeine);
+        return cacheManager;
     }
 
 }
