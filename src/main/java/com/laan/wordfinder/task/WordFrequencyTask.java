@@ -24,16 +24,7 @@ public class WordFrequencyTask {
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(multipartFile.getBytes())))) {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-
-                line = line.replaceAll("\\. ", " ");
-                line = line.replaceAll("; ", " ");
-                line = line.replaceAll(": ", " ");
-                line = line.replaceAll("\"", " ");
-                line = line.replaceAll(", ", " ");
-                line = line.replaceAll("\\(", " ");
-                line = line.replaceAll("\\)", " ");
-                line = line.replaceAll("\\?", " ");
-                line = line.replaceAll("\\.$", " ");
+                line = line.replaceAll("\\p{Punct}", " ");
 
                 String[] words = line.split("\\s+");
 
