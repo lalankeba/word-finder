@@ -50,7 +50,7 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
 
     private String getSha256Hash(final MultipartFile multipartFile) throws IOException, NoSuchAlgorithmException {
         byte[] data = multipartFile.getBytes();
-        byte[] hash = MessageDigest.getInstance("SHA-256").digest(data);
+        byte[] hash = MessageDigest.getInstance("MD5").digest(data);
         return new BigInteger(1, hash).toString(16);
     }
 
