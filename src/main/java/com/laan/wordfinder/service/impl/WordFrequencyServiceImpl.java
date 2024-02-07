@@ -8,29 +8,19 @@ import com.laan.wordfinder.task.WordFrequencyTask;
 import com.laan.wordfinder.validator.FileValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class WordFrequencyServiceImpl implements WordFrequencyService {
-
-    @Value("${uploaded.file.path}")
-    private String uploadedFileLocation;
 
     private final WordFrequencyMapper wordFrequencyMapper;
 
@@ -44,14 +34,9 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
             fileValidator.validateFile(multipartFile, k);
             String fileName = multipartFile.getOriginalFilename();
             log.info("Processing the file: {} for k: {} words", fileName, k);
+            String hash = getSha256Hash(multipartFile);
 
-            Path savedFilePath = saveFileInStorage(multipartFile);
-
-            String hash = getSha256Hash(savedFilePath);
-
-            Map<String, Integer> map = wordFrequencyTask.findFrequentWords(savedFilePath.toFile(), k, hash);
-
-            deleteFileFromStorage(savedFilePath);
+            Map<String, Integer> map = wordFrequencyTask.findFrequentWords(multipartFile, k, hash);
 
             return wordFrequencyMapper.mapDetailsToResponse(map, fileName);
         } catch (IOException e) {
@@ -63,32 +48,10 @@ public class WordFrequencyServiceImpl implements WordFrequencyService {
         }
     }
 
-    private String getSha256Hash(final Path filePath) throws IOException, NoSuchAlgorithmException {
-        byte[] data = Files.readAllBytes(Paths.get(String.valueOf(filePath)));
+    private String getSha256Hash(final MultipartFile multipartFile) throws IOException, NoSuchAlgorithmException {
+        byte[] data = multipartFile.getBytes();
         byte[] hash = MessageDigest.getInstance("SHA-256").digest(data);
         return new BigInteger(1, hash).toString(16);
-    }
-
-    private Path saveFileInStorage(final MultipartFile multipartFile) throws IOException {
-        log.info("Saving file temporarily in the storage");
-        Path rootDir = Paths.get(uploadedFileLocation);
-        if (!Files.exists(rootDir)) {
-            rootDir = Files.createDirectory(Paths.get(uploadedFileLocation));
-        }
-        Path destFilePath = rootDir.resolve(Paths.get(UUID.randomUUID().toString())).normalize().toAbsolutePath();
-
-        try (InputStream inputStream = multipartFile.getInputStream()) {
-            Files.copy(inputStream, destFilePath, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        return destFilePath;
-    }
-
-    private void deleteFileFromStorage(final Path savedFilePath) throws IOException {
-        log.info("Deleting file from the storage");
-        if (Files.exists(savedFilePath)) {
-            Files.delete(savedFilePath);
-        }
     }
 
 }
