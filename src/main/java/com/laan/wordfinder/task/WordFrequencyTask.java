@@ -26,7 +26,7 @@ public class WordFrequencyTask {
             while ((line = bufferedReader.readLine()) != null) {
                 line = line.replaceAll("\\p{Punct}", " ");
 
-                String[] words = line.split("\\s+");
+                String[] words = line.toLowerCase().split("\\s+");
 
                 for (String word : words) {
                     if (!word.isEmpty()) {

@@ -205,7 +205,7 @@ class UploadControllerTest {
     @Test
     void uploadFileWithCorrectResult() throws Exception {
         MockMultipartFile multipartFile = getMultipartFile("tiny-file.txt");
-        int k = 8;
+        int k = 7;
 
         this.mockMvc.perform(
                         MockMvcRequestBuilders.multipart(PathUtil.UPLOAD + "?k=" + k).file(multipartFile)
@@ -217,12 +217,11 @@ class UploadControllerTest {
                 .andExpect(jsonPath("$.wordFrequencies.*", hasSize(k)))
                 .andExpect(jsonPath("$.wordFrequencies.book").value("2"))
                 .andExpect(jsonPath("$.wordFrequencies.read").value("2"))
-                .andExpect(jsonPath("$.wordFrequencies.The").value("1"))
-                .andExpect(jsonPath("$.wordFrequencies.the").value("1"))
+                .andExpect(jsonPath("$.wordFrequencies.the").value("2"))
                 .andExpect(jsonPath("$.wordFrequencies.was").value("1"))
                 .andExpect(jsonPath("$.wordFrequencies.yesterday").value("1"))
                 .andExpect(jsonPath("$.wordFrequencies.to").value("1"))
-                .andExpect(jsonPath("$.wordFrequencies.I").value("1"));
+                .andExpect(jsonPath("$.wordFrequencies.i").value("1"));
     }
 
     @Test
